@@ -7,7 +7,6 @@ import { useHlsPlayer } from './hooks/useHlsPlayer';
 import { useAutoSkip } from './hooks/useAutoSkip';
 import { useStallDetection } from './hooks/useStallDetection';
 import { useVideoResolution } from './hooks/useVideoResolution';
-import { useResolutionBadge } from './hooks/useResolutionBadge';
 import { DesktopControlsWrapper } from './desktop/DesktopControlsWrapper';
 import { DesktopOverlayWrapper } from './desktop/DesktopOverlayWrapper';
 import { DanmakuCanvas } from './DanmakuCanvas';
@@ -58,7 +57,6 @@ export function DesktopVideoPlayer({
 
   // Detect actual video resolution
   const videoResolution = useVideoResolution(refs.videoRef);
-  const { badgeVisible, flashBadge } = useResolutionBadge(videoResolution);
 
   // Notify parent when resolution is detected
   React.useEffect(() => {
@@ -208,7 +206,7 @@ export function DesktopVideoPlayer({
       ref={containerRef}
       className={`kvideo-container relative aspect-video bg-black rounded-[var(--radius-2xl)] group ${data.isFullscreen && fullscreenType === 'window' ? 'is-web-fullscreen' : ''
         } ${shouldForceLandscape ? 'force-landscape' : ''}`}
-      onMouseMove={() => { handleMouseMove(); flashBadge(); }}
+      onMouseMove={() => { handleMouseMove(); }}
       onMouseLeave={() => isPlaying && setShowControls(false)}
     >
       {/* Clipping Wrapper for video and overlays - Restores the 'Liquid Glass' rounded look */}
@@ -247,9 +245,9 @@ export function DesktopVideoPlayer({
             />
           )}
 
-          {/* Video Resolution Badge - auto-hides after 5 seconds */}
+          {/* Video Resolution Badge - follows controls bar visibility */}
           {videoResolution && (
-            <div className={`absolute top-3 left-3 z-20 pointer-events-none transition-opacity duration-500 ${badgeVisible ? 'opacity-80' : 'opacity-0'}`}>
+            <div className={`absolute top-3 left-3 z-20 pointer-events-none transition-opacity duration-300 ${data.showControls ? 'opacity-80' : 'opacity-0'}`}>
               <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold text-white ${videoResolution.color}`}>
                 {videoResolution.label}
                 <span className="font-normal opacity-80">{videoResolution.width}x{videoResolution.height}</span>
